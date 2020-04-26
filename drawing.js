@@ -1,5 +1,6 @@
 const COLORS = {
-    "HIGHLIGHT": "#a723ff",
+    "SELECT": "#3d7dff",
+    "HIGHLIGHT": "#c251ff",
     "FOCUS": "#ff7700",
     "OUTLINE": "#101010",
     "PITCH": "#0b6623",
@@ -8,7 +9,7 @@ const COLORS = {
     20000: "#efefef",
     1000: "#1c36cc",
     2000: "#c41116",
-    100: "#121212",
+    100: "#202020",
     200: "#cecece",
     300: "#50c910",
     400: "#ffed00",
@@ -107,33 +108,56 @@ let drawPitch = function() {
 };
 
 let drawPlayer = function(player) {
-    if (player.highlighted || player.focused) {
+    // Interaction
+    if (player.selected || player.highlighted || player.focused) {
         ctx.beginPath();
-        ctx.fillStyle = player.highlighted ? COLORS["HIGHLIGHT"] : COLORS["FOCUS"];
+        ctx.fillStyle = player.focused ? COLORS["FOCUS"] : (player.selected ? COLORS["SELECT"] : COLORS["HIGHLIGHT"]);
         ctx.arc(player.x * zoom, player.y * zoom, zoom, 0, 2 * Math.PI);
         ctx.fill();
     }
+
+    // Outer line
+    ctx.beginPath();
+    ctx.fillStyle = COLORS["OUTLINE"];
+    ctx.arc(player.x * zoom, player.y * zoom, 0.8 * zoom, 0, 2 * Math.PI);
+    ctx.fill();
+
+    // Role
     ctx.beginPath();
     ctx.fillStyle = COLORS[player.role];
-    ctx.arc(player.x * zoom, player.y * zoom, 0.75 * zoom, 0, 2 * Math.PI);
+    ctx.arc(player.x * zoom, player.y * zoom, 0.7 * zoom, 0, 2 * Math.PI);
     ctx.fill();
+
+    // Team
     ctx.beginPath();
     ctx.fillStyle = COLORS[player.team];
     ctx.arc(player.x * zoom, player.y * zoom, 0.5 * zoom, 0, 2 * Math.PI);
     ctx.fill();
+
+    // Bar
+    if (player.onBroom) {
+        ctx.fillStyle = COLORS[player.role];
+        ctx.fillRect((player.x - 0.55) * zoom, (player.y - 0.3) * zoom, 1.1 * zoom, 0.25 * zoom);
+    }
+
 };
 
 let drawBall = function(ball) {
-    if (ball.highlighted) {
+    // Interaction
+    if (ball.selected || ball.highlighted || ball.focused) {
         ctx.beginPath();
-        ctx.fillStyle = COLORS["HIGHLIGHT"];
+        ctx.fillStyle = ball.focused ? COLORS["FOCUS"] : (ball.selected ? COLORS["SELECT"] : COLORS["HIGHLIGHT"]);
         ctx.arc(ball.x * zoom, ball.y * zoom, 0.65 * zoom, 0, 2 * Math.PI);
         ctx.fill();
     }
+
+    // Outer line
     ctx.beginPath();
     ctx.fillStyle = COLORS["OUTLINE"];
     ctx.arc(ball.x * zoom, ball.y * zoom, 0.5 * zoom, 0, 2 * Math.PI);
     ctx.fill();
+
+    // Type
     ctx.beginPath();
     ctx.fillStyle = COLORS[ball.type];
     ctx.arc(ball.x * zoom, ball.y * zoom, 0.35 * zoom, 0, 2 * Math.PI);
@@ -196,6 +220,23 @@ let drawInterface = function() {
             ctx.fill();
         }
     }
+
+    // Shortcuts
+    let i = 0;
+    for (let shortcut of [{key: "M", txt: "ove"}, {key: "T", txt: "hrow"}, {key: "P", txt: "ass"}, {key: "B", txt: "eat"}, {key: "D", txt: "ie"}, {key: "L", txt: "ive"}]) {
+        ctx.fillStyle = shortcuts[shortcut.key.toLowerCase()] ? COLORS["FOCUS"] : COLORS["OUTLINE"];
+        ctx.font = "bold " + interface.shortcutsDisplay.h * zoom + "px Arial";
+        let calculatedWidth = ctx.measureText(shortcut.key).width;
+        ctx.fillText(shortcut.key, (interface.shortcutsDisplay.x + i * interface.shortcutsDisplay.w) * zoom, (interface.shortcutsDisplay.y + interface.shortcutsDisplay.h) * zoom);
+        ctx.fillStyle = COLORS["OUTLINE"];
+        ctx.font = 0.6 * interface.shortcutsDisplay.h * zoom + "px Arial";
+        ctx.fillText(shortcut.txt, (interface.shortcutsDisplay.x + i * interface.shortcutsDisplay.w) * zoom + calculatedWidth, (interface.shortcutsDisplay.y + interface.shortcutsDisplay.h) * zoom);
+        i++;
+    }
+
+    // Feed
+    ctx.font = interface.feedDisplay.h * zoom + "px Arial";
+    ctx.fillText(interface.feed, total_length - ctx.measureText(interface.feed).width - zoom, (interface.feedDisplay.y + interface.feedDisplay.h) * zoom);
 };
 
 let lastDraw = new Date().getTime();
@@ -229,6 +270,9 @@ let draw = function() {
     for (let i = 0; i < interface.frames[interface.activeFrame].players.length; i++) {
         let activePlayerState = interface.frames[interface.activeFrame].players[i];
         let drawnPlayer = activePlayerState.clone(false);
+        if (activePlayerState === selected) {
+            drawnPlayer.selected = true;
+        }
         if (activePlayerState === highlighted) {
             drawnPlayer.highlighted = true;
         }
@@ -248,6 +292,9 @@ let draw = function() {
     for (let i = 0; i < interface.frames[interface.activeFrame].balls.length; i++) {
         let activeBallState = interface.frames[interface.activeFrame].balls[i];
         let drawnBall = activeBallState.clone(false);
+        if (activeBallState === selected || (activeBallState.holder !== undefined && activeBallState.holder !== null && activeBallState.holder === selected)) {
+            drawnBall.selected = true;
+        }
         if (activeBallState === highlighted) {
             drawnBall.highlighted = true;
         }

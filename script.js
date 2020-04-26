@@ -44,9 +44,10 @@ let indexInArray = function(object, array) {
 
 let Interface = function() {
     this.frames = [];
+    this.feed = "";
     this.activeFrame = -1;
     this.animationEnd = 0;
-    this.animationLength = 500;
+    this.animationLength = 1500;
     this.margin = 0.25;
     this.padding = 0.25;
     this.uiHeight = 2
@@ -55,6 +56,8 @@ let Interface = function() {
     this.framesDisplay = {x: this.stepBtn.x + this.stepBtn.w + this.margin, y: this.margin, w: 0, h: this.frameBtn.h};
     this.saveFrameBtn = {x: this.framesDisplay.x + this.framesDisplay.w + this.margin, y: this.margin, w: this.stepBtn.w, h: this.uiHeight};
     this.removeFrameBtn = {x: this.saveFrameBtn.x + this.saveFrameBtn.w + this.margin, y: this.margin, w: this.stepBtn.w, h: this.uiHeight};
+    this.shortcutsDisplay = {x: this.margin, y: this.uiHeight + this.margin, w: 2.5 * this.stepBtn.w, h: this.uiHeight};
+    this.feedDisplay = {y: this.uiHeight + 2 * this.margin, h: 0.5 * this.uiHeight};
 
     this.nextFrame = function() {
         this.activeFrame = (this.activeFrame + 1) % this.frames.length;
@@ -108,19 +111,23 @@ let Interface = function() {
     };
 };
 
-let Player = function (x, y, team, role) {
+let Player = function (x, y, team, role, onBroom=true) {
     this.x = x;
     this.y = y;
     this.team = team;
     this.role = role;
+    this.onBroom = onBroom;
 };
 Player.prototype.clone = function(withAttached = true) {
-    let player = new Player(this.x, this.y, this.team, this.role);
+    let player = new Player(this.x, this.y, this.team, this.role, this.onBroom);
     if (withAttached && this.attached !== undefined && this.attached !== null) {
         player.attached = this.attached.clone(false);
         player.attached.holder = player;
     }
     return player;
+};
+Player.prototype.identity = function() {
+    return (this.team === 1000 ? "Blue" : "Red") + " " + (this.role === 100 ? "Beater" : (this.role === 200 ? "Chaser" : (this.role === 300 ? "Keeper" : "Seeker")));
 };
 
 let Ball = function (x, y, type) {
@@ -136,6 +143,9 @@ Ball.prototype.clone = function(withHolder = true) {
     }
     return ball;
 }
+Ball.prototype.identity = function() {
+    return this.type === 10000 ? "Bludger" : "Quaffle";
+};
 
 let defaultBalls = [];
 for (let iBall = 0; iBall < 4; iBall++) {
@@ -164,10 +174,13 @@ for (let side of [-1, 1]) {
 let interface = new Interface();
 interface.addFrame(defaultPlayers, defaultBalls);
 
-
-selected = null;
-highlighted = null;
-focused = null;
+let mouseDown = false;
+let clicked = null;
+let selected = null;
+let dragged = null;
+let highlighted = null;
+let focused = null;
+let shortcuts = {};
 
 let isInRect = function(x, y, rect) {
     return rect.x <= x && x <= rect.x + rect.w && rect.y <= y && y <= rect.y + rect.h;
@@ -179,7 +192,7 @@ let getClosestAnimate = function(x, y) {
     let animates = interface.frames[interface.activeFrame].balls.concat(interface.frames[interface.activeFrame].players);
     for (let i = 0; i < animates.length; i++) {
         let animate = animates[i];
-        if (animate !== selected) {
+        if (animate !== dragged) {
             let distance = Math.hypot(animate.x - x, animate.y - y);
             if (distance <= minDistance) {
                 closest = animate;
@@ -199,52 +212,153 @@ let getMeterCoordinates = function(e) {
     return [x, y];
 };
 
+let animateMoveTo = function(animate, x, y) {
+    animate.x = x;
+    animate.y = y;
+    if (animate.attached !== undefined && animate.attached !== null) {
+        animate.attached.x = animate.x;
+        animate.attached.y = animate.y + 0.75;
+    }
+};
+
+let animateCatch = function(animate, caught) {
+    let hadBall = animateDrop(animate);
+    animate.attached = caught;
+    caught.holder = animate;
+    animateMoveTo(animate, animate.x, animate.y);
+    return hadBall;
+};
+
+let animateDrop = function(animate) {
+    if (animate.attached !== undefined && animate.attached !== null) {
+        animate.attached.holder = null;
+        animateMoveTo(animate.attached, animate.x, animate.y - 1.3);
+        animate.attached = null;
+        return true;
+    }
+    return false;
+};
+
+let animateDie = function(animate) {
+    animate.onBroom = false;
+    if (animateDrop(animate)) {
+        return true;
+    }
+    return false;
+};
+
 let updateSelection = function(x, y) {
     let closest = getClosestAnimate(x, y);
-    if (selected === null) {
+    if (dragged === null) {
         highlighted = closest;
         focused = null;
     } else {
-        selected.x = x;
-        selected.y = y;
-        if (selected.attached !== undefined && selected.attached !== null) {
-            selected.attached.x = selected.x;
-            selected.attached.y = selected.y + 0.75;
-        }
+        animateMoveTo(dragged, x, y);
         highlighted = null;
-        focused = selected instanceof Ball && closest instanceof Player ? closest : null;
+        focused = dragged instanceof Ball && closest instanceof Player ? closest : null;
     }
 };
 
 let selectEvent = function(e) {
+    mouseDown = true;
     let [x, y] = getMeterCoordinates(e);
-    selected = getClosestAnimate(x, y);
-    if (selected !== null && selected.holder !== undefined && selected.holder !== null) {
-        selected.holder.attached = null;
+    clicked = getClosestAnimate(x, y);
+    if (shortcuts["d"] && clicked !== null && clicked instanceof Player) {
+        let lostBall = clicked.attached;
+        let hadBall = animateDie(clicked);
+        interface.feed = clicked.identity() + " goes off broom";
+        if (hadBall) {
+            interface.feed += ", " + lostBall.identity() + " dropped";
+        }
+        clicked = null;
+    }
+    else if (shortcuts["l"] && clicked !== null && clicked instanceof Player) {
+        clicked.onBroom = true;
+        interface.feed = clicked.identity() + " goes back on broom";
+        clicked = null;
+    }
+    else if (selected !== null) {
+        if (shortcuts["m"]) {
+            animateMoveTo(selected, x, y);
+            interface.feed = selected.identity() + " moves to (" + Math.round(x) + ", " + Math.round(y) + ")";
+        }
+        else if (shortcuts["t"]) {
+            let held = selected.attached;
+            if (animateDrop(selected)) {
+                animateMoveTo(held, x, y);
+                interface.feed = selected.identity() + " throws " + held.identity() + " to (" + Math.round(x) + ", " + Math.round(y) + ")";
+                selected = held;
+            }
+        }
+        else if (shortcuts["p"]) {
+            if (clicked !== null && clicked instanceof Player) {
+                let passed = selected.attached;
+                if (animateDrop(selected)) {
+                    let droppedBall = clicked.attached;
+                    let hadBall = animateCatch(clicked, passed);
+                    interface.feed = selected.identity() + " passes " + passed.identity() + " to " + clicked.identity();
+                    if (hadBall) {
+                        interface.feed += ", " + droppedBall.identity() + " dropped";
+                    }
+                }
+            }
+        }
+        else if (shortcuts["b"]) {
+            if (clicked !== null) {
+                if (clicked instanceof Player) {
+                    let thrown = selected.attached;
+                    if (animateDrop(selected)) {
+                        let lostBall = clicked.attached;
+                        let hadBall = animateDie(clicked);
+                        let side = Math.sign(selected.x - clicked.x);
+                        animateMoveTo(thrown, clicked.x + side * 0.4, clicked.y - 0.25);
+                        interface.feed = selected.identity() + " beats " + clicked.identity() + " with " + thrown.identity();
+                        if (hadBall) {
+                            interface.feed += ", " + lostBall.identity() + " dropped";
+                        }
+                    }
+                }
+            }
+        }
     }
     updateSelection(x, y);
-    e.preventDefault();
+    return false;
+}
+
+let releaseEvent = function(e) {
+    mouseDown = false;
+    let [x, y] = getMeterCoordinates(e);
+    let closest = getClosestAnimate(x, y);
+    if (closest === clicked) {
+        selected = selected === clicked ? null : clicked;
+        if (selected instanceof Ball && selected.holder !== undefined && selected.holder !== null) {
+            selected = selected.holder;
+        }
+        clicked = null;
+    }
+
+    // Attach on release
+    if (dragged !== null && focused !== null) {
+        animateCatch(focused, dragged);
+        if (dragged === selected) {
+            selected = focused;
+        }
+    }
+
+    dragged = null;
+    updateSelection(x, y);
     return false;
 }
 
 let moveEvent = function(e) {
     let [x, y] = getMeterCoordinates(e);
-    updateSelection(x, y);
-    e.preventDefault();
-    return false;
-}
-
-let releaseEvent = function(e) {
-    let [x, y] = getMeterCoordinates(e);
-    if (selected !== null && focused !== null) {
-        focused.attached = selected;
-        selected.holder = focused;
-        selected.x = focused.x;
-        selected.y = focused.y + 0.75;
+    if (mouseDown) {
+        dragged = clicked;
+        if (dragged !== null && dragged.holder !== undefined && dragged.holder !== null) {
+            dragged.holder.attached = null;
+        }
     }
-    selected = null;
     updateSelection(x, y);
-    e.preventDefault();
     return false;
 }
 
@@ -271,13 +385,20 @@ let clickEvent = function(e) {
             interface.goToFrame(frame);
         }
     }
-    e.preventDefault();
     return false;
 };
 
-
+canvas.addEventListener("keydown", function(e) {
+    shortcuts[e.key] = true;
+    //e.preventDefault();
+}, false);
+canvas.addEventListener("keyup", function(e) {
+    shortcuts[e.key] = false;
+    //e.preventDefault();
+}, false);
 canvas.addEventListener("mousedown", selectEvent, false);
-canvas.addEventListener("mousemove", moveEvent, false);
 canvas.addEventListener("mouseup", releaseEvent, false);
+canvas.addEventListener("mousemove", moveEvent, false);
 canvas.addEventListener("click", clickEvent, false);
 canvas.addEventListener("contextmenu", actionEvent, false);
+canvas.focus();
