@@ -5,14 +5,14 @@ const COLORS = {
     "OUTLINE": "#101010",
     "PITCH": "#0b6623",
     "CHALK": "#ededed",
-    10000: "#202020",
-    20000: "#efefef",
-    1000: "#1c36cc",
-    2000: "#c41116",
-    100: "#202020",
-    200: "#cecece",
-    300: "#50c910",
-    400: "#ffed00",
+    [Type.BLUDGER]: "#202020",
+    [Type.QUAFFLE]: "#efefef",
+    [Team.LEFT]: "#1c36cc",
+    [Team.RIGHT]: "#c41116",
+    [Role.BEATER]: "#202020",
+    [Role.CHASER]: "#cecece",
+    [Role.KEEPER]: "#50c910",
+    [Role.SEEKER]: "#ffed00",
 };
 
 let zoom = 10;
@@ -140,6 +140,28 @@ let drawPlayer = function(player) {
         ctx.fillRect((player.x - 0.55) * zoom, (player.y - 0.3) * zoom, 1.1 * zoom, 0.25 * zoom);
     }
 
+    // Identity indicator
+    if (isOnPitch(player)) {
+        if (drawPlayer.identity[player.team][player.role] === undefined) {
+            drawPlayer.identity[player.team][player.role] = 0;
+        }
+        else {
+            drawPlayer.identity[player.team][player.role]++;
+        }
+        ctx.fillStyle = COLORS[player.team];
+        if (drawPlayer.identity[player.team][player.role] % 2 === 1) {
+            ctx.beginPath();
+            ctx.arc(player.x * zoom, (player.y + 0.5) * zoom, 0.15 * zoom, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+        if (drawPlayer.identity[player.team][player.role] > 1) {
+            for (let side of [-1, 1]) {
+                ctx.beginPath();
+                ctx.arc((player.x + side * 0.3) * zoom, (player.y + 0.4) * zoom, 0.15 * zoom, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+        }
+    }
 };
 
 let drawBall = function(ball) {
@@ -267,6 +289,7 @@ let draw = function() {
     drawPitch();
     drawInterface();
 
+    drawPlayer.identity = {[Team.LEFT]: {}, [Team.RIGHT]: {}};
     for (let i = 0; i < interface.frames[interface.activeFrame].players.length; i++) {
         let activePlayerState = interface.frames[interface.activeFrame].players[i];
         let drawnPlayer = activePlayerState.clone(false);

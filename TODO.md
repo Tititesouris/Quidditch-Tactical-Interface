@@ -1,5 +1,4 @@
 # TODO
-- Indicator for which chaser/beater (., .., ...) dots on the bottom of the outline
 - Add Snitch
 - Choosing motion speed
 - Right click to add players
@@ -17,3 +16,4 @@
 - Walk or run speed
 - Preset teams (m/f/*, name, number, speed, endurance)
 - Off broom run back automatically
+- Vertical field UI

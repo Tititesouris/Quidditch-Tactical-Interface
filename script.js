@@ -42,6 +42,10 @@ let indexInArray = function(object, array) {
     return -1;
 };
 
+let isOnPitch = function(player) {
+    return POSITION["MIDDLE"][0] - 0.5 * DIMENSIONS["LENGTH"] <= player.x && player.x <= POSITION["MIDDLE"][0] + 0.5 * DIMENSIONS["LENGTH"] && POSITION["MIDDLE"][1] - 0.5 * DIMENSIONS["WIDTH"] <= player.y && player.y <= POSITION["MIDDLE"][1] + 0.5 * DIMENSIONS["WIDTH"];
+};
+
 let Interface = function() {
     this.frames = [];
     this.feed = "";
@@ -144,7 +148,7 @@ Ball.prototype.clone = function(withHolder = true) {
     return ball;
 }
 Ball.prototype.identity = function() {
-    return this.type === 10000 ? "Bludger" : "Quaffle";
+    return this.type === Type.BLUDGER ? "Bludger" : "Quaffle";
 };
 
 let defaultBalls = [];
