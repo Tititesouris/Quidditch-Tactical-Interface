@@ -369,11 +369,6 @@ let moveEvent = function(e) {
     return false;
 }
 
-let actionEvent = function(e) {
-    e.preventDefault();
-    return false;
-};
-
 let clickEvent = function(e) {
     let [x, y] = getMeterCoordinates(e);
     let closest = getClosestAnimate(x, y);
@@ -392,6 +387,59 @@ let clickEvent = function(e) {
             interface.goToFrame(frame);
         }
     }
+    document.getElementById("context-menu").style.display = "none";
+    return false;
+};
+
+let contextMenuOptions = [Role.BEATER, Role.CHASER, Role.KEEPER, Role.SEEKER].concat([Type.BLUDGER, Type.QUAFFLE]);
+let contextMenuEvent = function(e) {
+    let contextMenu = document.getElementById("context-menu");
+    let [x, y] = getMeterCoordinates(e);
+    let team = x < POSITION["MIDDLE"][0] ? Team.LEFT : Team.RIGHT;
+    contextMenu.innerHTML = "";
+    for (let i = 0; i < contextMenuOptions.length; i++) {
+        let option = document.createElement("menu");
+        if (i < contextMenuOptions.length - 2) {
+            option.setAttribute("team", team);
+            option.setAttribute("role", contextMenuOptions[i]);
+            let roleName = contextMenuOptions[i] === Role.BEATER ? "Beater" : (contextMenuOptions[i] === Role.CHASER ? "Chaser" : (contextMenuOptions[i] === Role.KEEPER ? "Keeper" : "Seeker"));
+            let newName = "Add " + (team === Team.LEFT ? "Blue" : "Red") + " " + roleName;
+            option.setAttribute("name", newName);
+        }
+        else {
+            option.setAttribute("type", contextMenuOptions[i]);
+            option.setAttribute("name", "Add " + (contextMenuOptions[i] === Type.BLUDGER ? "Bludger" : "Quaffle"));
+        }
+        contextMenu.appendChild(option);
+    }
+    contextMenu.style.display = "block";
+    contextMenu.style.left = Math.min(e.pageX, window.innerWidth - contextMenu.clientWidth - 20) + "px";
+    contextMenu.style.top = Math.min(e.pageY, window.innerHeight - contextMenu.clientHeight) + "px";
+    e.preventDefault();
+    return false;
+};
+
+let contextMenuClickEvent = function(e) {
+    let contextMenu = document.getElementById("context-menu");
+    let y = e.pageY - parseInt(contextMenu.style.top.replace("px", ""));
+    let choice = Math.floor(y / (contextMenu.clientHeight / contextMenu.childElementCount));
+    if (choice < contextMenuOptions.length - 2) {
+        let team = parseInt(contextMenu.children[choice].getAttribute("team"));
+        let role = parseInt(contextMenu.children[choice].getAttribute("role"));
+        let side = team === Team.LEFT ? -1 : 1;
+        interface.frames[interface.activeFrame].players.push(
+            new Player(POSITION["MIDDLE"][0] + side * 20.5, DIMENSIONS["TOTAL_WIDTH"] - 1.5, team, role)
+        );
+    }
+    else {
+        let type = parseInt(contextMenu.children[choice].getAttribute("type"));
+        interface.frames[interface.activeFrame].balls.push(
+            new Ball(POSITION["MIDDLE"][0], DIMENSIONS["TOTAL_WIDTH"] - 1.5, type)
+        );
+    }
+
+    contextMenu.style.display = "none";
+    e.preventDefault();
     return false;
 };
 
@@ -407,5 +455,6 @@ canvas.addEventListener("mousedown", selectEvent, false);
 canvas.addEventListener("mouseup", releaseEvent, false);
 canvas.addEventListener("mousemove", moveEvent, false);
 canvas.addEventListener("click", clickEvent, false);
-canvas.addEventListener("contextmenu", actionEvent, false);
+canvas.addEventListener("contextmenu", contextMenuEvent, false);
+document.getElementById("context-menu").addEventListener("click", contextMenuClickEvent, false);
 canvas.focus();

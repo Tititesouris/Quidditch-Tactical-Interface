@@ -306,10 +306,12 @@ let draw = function() {
         }
         if (interface.animationEnd >= currentTime) {
             previousPlayerState = interface.frames[mod(interface.activeFrame - 1, interface.frames.length)].players[i];
-            let t = 1 - ((interface.animationEnd - currentTime) / interface.animationLength);
-            let [x, y] = lerpPosition(activePlayerState.x, activePlayerState.y, previousPlayerState.x, previousPlayerState.y, t);
-            drawnPlayer.x = x;
-            drawnPlayer.y = y;
+            if (previousPlayerState !== undefined) {
+                let t = 1 - ((interface.animationEnd - currentTime) / interface.animationLength);
+                let [x, y] = lerpPosition(activePlayerState.x, activePlayerState.y, previousPlayerState.x, previousPlayerState.y, t);
+                drawnPlayer.x = x;
+                drawnPlayer.y = y;
+            }
         }
         drawPlayer(drawnPlayer);
     }
@@ -325,10 +327,12 @@ let draw = function() {
         }
         if (interface.animationEnd >= currentTime) {
             previousBallState = interface.frames[mod(interface.activeFrame - 1, interface.frames.length)].balls[i];
-            let t = 1 - ((interface.animationEnd - currentTime) / interface.animationLength);
-            let [x, y] = lerpPosition(activeBallState.x, activeBallState.y, previousBallState.x, previousBallState.y, t);
-            drawnBall.x = x;
-            drawnBall.y = y;
+            if (previousBallState !== undefined) {
+                let t = 1 - ((interface.animationEnd - currentTime) / interface.animationLength);
+                let [x, y] = lerpPosition(activeBallState.x, activeBallState.y, previousBallState.x, previousBallState.y, t);
+                drawnBall.x = x;
+                drawnBall.y = y;
+            }
         }
         drawBall(drawnBall);
     }

@@ -1,3 +1,25 @@
 body {
     margin: 0;
+    font-family: Arial;
+}
+
+#context-menu {
+    position: absolute;
+    display: none;
+    z-index: 100;
+}
+
+menu {
+    background-color: #fdfdfd;
+    margin: 0;
+    padding: 5px;
+    border-bottom: 1px solid black;
+}
+
+menu:hover {
+    background-color: #cacaca;
+}
+
+menu[name]:before {
+    content: attr(name);
 }
