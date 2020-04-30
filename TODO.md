@@ -1,6 +1,6 @@
 # TODO
+- Free drawing tool
 - Choosing motion speed
-- Right click to add players
 - Starting line up preset
 - Marking animates to tell the people watching where to focus
 - Dropdown for choosing tactic
