@@ -9,10 +9,12 @@ const COLORS = {
     [Type.QUAFFLE]: "#efefef",
     [Team.LEFT]: "#1c36cc",
     [Team.RIGHT]: "#c41116",
+    [Team.NONE]: "#ffd400",
     [Role.BEATER]: "#202020",
     [Role.CHASER]: "#cecece",
     [Role.KEEPER]: "#50c910",
     [Role.SEEKER]: "#ffed00",
+    [Role.SNITCH]: "#ffd400"
 };
 
 let zoom = 10;
@@ -289,7 +291,7 @@ let draw = function() {
     drawPitch();
     drawInterface();
 
-    drawPlayer.identity = {[Team.LEFT]: {}, [Team.RIGHT]: {}};
+    drawPlayer.identity = {[Team.LEFT]: {}, [Team.RIGHT]: {}, [Team.NONE]: {}};
     for (let i = 0; i < interface.frames[interface.activeFrame].players.length; i++) {
         let activePlayerState = interface.frames[interface.activeFrame].players[i];
         let drawnPlayer = activePlayerState.clone(false);

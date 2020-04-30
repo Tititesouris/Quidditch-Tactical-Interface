@@ -20,14 +20,16 @@ const Type = {
 
 const Team = {
    LEFT: 1000,
-   RIGHT: 2000
+   RIGHT: 2000,
+   NONE: 3000
 };
 
 const Role = {
    BEATER: 100, // 2
    CHASER: 200, // 3
    KEEPER: 300, // 1
-   SEEKER: 400 // 1
+   SEEKER: 400, // 1
+   SNITCH: 500
 };
 
 let canvas = document.getElementById("pitch");
@@ -174,6 +176,7 @@ for (let side of [-1, 1]) {
         defaultPlayers.push(new Player(x, y, team, role));
     }
 }
+defaultPlayers.push(new Player(POSITION["MIDDLE"][0], DIMENSIONS["TOTAL_WIDTH"], Team.NONE, Role.SNITCH));
 
 let interface = new Interface();
 interface.addFrame(defaultPlayers, defaultBalls);

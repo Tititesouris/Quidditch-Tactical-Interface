@@ -1,5 +1,4 @@
 # TODO
-- Add Snitch
 - Choosing motion speed
 - Right click to add players
 - Starting line up preset
