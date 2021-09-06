@@ -1,7 +1,7 @@
 # TODO
-- Free drawing tool
+- activeBallState.Clone error
+- Fix parseInt usage
 - Choosing motion speed
-- Starting line up preset
 - Marking animates to tell the people watching where to focus
 - Dropdown for choosing tactic
 - Speech bubbles
@@ -10,6 +10,7 @@
 - Preview state after dropping the dragged animate by showing in transparency what it would be
 
 # Maybes
+- Show only half of the pitch instead of all of it, for strategies around a single side
 - Score for each team
 - Scoring action
 - Walk or run speed

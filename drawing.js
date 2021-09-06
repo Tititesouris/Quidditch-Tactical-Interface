@@ -5,6 +5,7 @@ const COLORS = {
     "OUTLINE": "#101010",
     "PITCH": "#0b6623",
     "CHALK": "#ededed",
+    "FREEDRAWING": "#d866e3",
     [Type.BLUDGER]: "#202020",
     [Type.QUAFFLE]: "#efefef",
     [Team.LEFT]: "#1c36cc",
@@ -261,6 +262,12 @@ let drawInterface = function() {
     // Feed
     ctx.font = interface.feedDisplay.h * zoom + "px Arial";
     ctx.fillText(interface.feed, total_length - ctx.measureText(interface.feed).width - zoom, (interface.feedDisplay.y + interface.feedDisplay.h) * zoom);
+
+    // Free Drawing
+    ctx.fillStyle = COLORS["FREEDRAWING"];
+    for (let pixel of drawnPixels) {
+        ctx.fillRect(pixel[0], pixel[1], 1, 1);
+    }
 };
 
 let lastDraw = new Date().getTime();
