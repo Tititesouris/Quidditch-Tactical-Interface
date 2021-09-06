@@ -154,14 +154,14 @@ Ball.prototype.identity = function() {
 };
 
 let defaultBalls = [];
-for (let iBall = 0; iBall < 4; iBall++) {
-    let type = iBall == 0 ? Type.QUAFFLE : Type.BLUDGER;
-    let position = iBall < 2 ? 2.75 : 8.25;
-    position = iBall % 2 ? position : -position;
-    defaultBalls.push(new Ball(POSITION["MIDDLE"][0], POSITION["MIDDLE"][1] + position, type));
+for (let iBall = -1; iBall < 2; iBall++) {
+    let type = iBall % 2 ? Type.BLUDGER : Type.QUAFFLE;
+    defaultBalls.push(new Ball(POSITION["MIDDLE"][0] + iBall * 11, POSITION["MIDDLE"][1], type));
 }
+defaultBalls.push(new Ball(POSITION["MIDDLE"][0], POSITION["MIDDLE"][1] + 8.25), Type.BLUDGER);
 
 let defaultPlayers = [];
+
 for (let side of [-1, 1]) {
     let team = side === -1 ? Team.LEFT : Team.RIGHT;
     for (let iPlayer = 0; iPlayer < 7; iPlayer++) {
@@ -176,7 +176,20 @@ for (let side of [-1, 1]) {
         defaultPlayers.push(new Player(x, y, team, role));
     }
 }
+
+/* STARTING LINEUP
+for (let side of [-1, 1]) {
+    let team = side === -1 ? Team.LEFT : Team.RIGHT;
+    defaultPlayers.push(new Player(POSITION["MIDDLE"][0] + side, POSITION["MIDDLE"][1] + 8.25, team, Role.KEEPER));
+    defaultPlayers.push(new Player(POSITION["MIDDLE"][0] + side, POSITION["MIDDLE"][1] + 16.5, team, Role.BEATER));
+    defaultPlayers.push(new Player(POSITION["MIDDLE"][0] + side * 5.5, POSITION["MIDDLE"][1] + 16.5, team, Role.CHASER));
+    defaultPlayers.push(new Player(POSITION["MIDDLE"][0] - side * 8, POSITION["MIDDLE"][1] + 16.5, team, Role.CHASER));
+    defaultPlayers.push(new Player(POSITION["MIDDLE"][0] + side * 11, POSITION["MIDDLE"][1] + 16.5, team, Role.BEATER));
+    defaultPlayers.push(new Player(POSITION["MIDDLE"][0] + side * 16.5, POSITION["MIDDLE"][1] + 16.5, team, Role.CHASER));
+    defaultPlayers.push(new Player(POSITION["MIDDLE"][0] + side, DIMENSIONS["TOTAL_WIDTH"] - 3, team, Role.SEEKER));
+}
 defaultPlayers.push(new Player(POSITION["MIDDLE"][0], DIMENSIONS["TOTAL_WIDTH"], Team.NONE, Role.SNITCH));
+*/
 
 let interface = new Interface();
 interface.addFrame(defaultPlayers, defaultBalls);
