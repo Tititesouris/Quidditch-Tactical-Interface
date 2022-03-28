@@ -1,6 +1,6 @@
 # TODO
-- activeBallState.Clone error
 - Fix parseInt usage
+- Export to gif
 - Choosing motion speed
 - Marking animates to tell the people watching where to focus
 - Dropdown for choosing tactic

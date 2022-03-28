@@ -167,7 +167,7 @@ for (let iBall = -1; iBall < 2; iBall++) {
     let type = iBall % 2 ? Type.BLUDGER : Type.QUAFFLE;
     defaultBalls.push(new Ball(POSITION["MIDDLE"][0] + iBall * 11, POSITION["MIDDLE"][1], type));
 }
-defaultBalls.push(new Ball(POSITION["MIDDLE"][0], POSITION["MIDDLE"][1] + 8.25), Type.BLUDGER);
+defaultBalls.push(new Ball(POSITION["MIDDLE"][0], POSITION["MIDDLE"][1] + 8.25, Type.BLUDGER));
 
 let defaultPlayers = [];
 
