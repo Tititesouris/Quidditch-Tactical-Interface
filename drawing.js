@@ -49,7 +49,7 @@ let drawPitch = function() {
     ctx.beginPath();
     ctx.setLineDash([0.5 * zoom, 0.5 * zoom]);
     ctx.moveTo(middle[0], total_width - 5.5 * zoom);
-    ctx.lineTo(middle[0], total_width);;
+    ctx.lineTo(middle[0], total_width);
     ctx.stroke();
     ctx.setLineDash([]);
 
@@ -192,56 +192,56 @@ let drawBall = function(ball) {
 let drawInterface = function() {
     // Buttons background
     ctx.fillStyle = COLORS["CHALK"];
-    ctx.fillRect(interface.stepBtn.x * zoom, interface.stepBtn.y * zoom, interface.stepBtn.w * zoom, interface.stepBtn.h * zoom);
-    ctx.fillRect(interface.saveFrameBtn.x * zoom, interface.saveFrameBtn.y * zoom, interface.saveFrameBtn.w * zoom, interface.saveFrameBtn.h * zoom);
-    ctx.fillRect(interface.removeFrameBtn.x * zoom, interface.removeFrameBtn.y * zoom, interface.removeFrameBtn.w * zoom, interface.removeFrameBtn.h * zoom);
+    ctx.fillRect(userInterface.stepBtn.x * zoom, userInterface.stepBtn.y * zoom, userInterface.stepBtn.w * zoom, userInterface.stepBtn.h * zoom);
+    ctx.fillRect(userInterface.saveFrameBtn.x * zoom, userInterface.saveFrameBtn.y * zoom, userInterface.saveFrameBtn.w * zoom, userInterface.saveFrameBtn.h * zoom);
+    ctx.fillRect(userInterface.removeFrameBtn.x * zoom, userInterface.removeFrameBtn.y * zoom, userInterface.removeFrameBtn.w * zoom, userInterface.removeFrameBtn.h * zoom);
 
     // Buttons foreground
     ctx.fillStyle = COLORS["OUTLINE"];
     ctx.strokeStyle = COLORS["OUTLINE"];
     // Step button
     ctx.beginPath();
-    ctx.moveTo((interface.stepBtn.x + interface.padding) * zoom, (interface.stepBtn.y + interface.padding) * zoom);
-    ctx.lineTo((interface.stepBtn.x + interface.padding) * zoom, (interface.stepBtn.y + interface.stepBtn.h - interface.padding) * zoom);
-    ctx.lineTo((interface.stepBtn.x + interface.stepBtn.w - interface.padding) * zoom, (interface.stepBtn.y + 0.5 * interface.stepBtn.h) * zoom);
+    ctx.moveTo((userInterface.stepBtn.x + userInterface.padding) * zoom, (userInterface.stepBtn.y + userInterface.padding) * zoom);
+    ctx.lineTo((userInterface.stepBtn.x + userInterface.padding) * zoom, (userInterface.stepBtn.y + userInterface.stepBtn.h - userInterface.padding) * zoom);
+    ctx.lineTo((userInterface.stepBtn.x + userInterface.stepBtn.w - userInterface.padding) * zoom, (userInterface.stepBtn.y + 0.5 * userInterface.stepBtn.h) * zoom);
     ctx.fill();
     // Save Frame button
     ctx.beginPath();
-    ctx.lineWidth = 0.15 * interface.saveFrameBtn.h * zoom;
-    ctx.moveTo((interface.saveFrameBtn.x + interface.padding) * zoom, (interface.saveFrameBtn.y + 0.5 * interface.saveFrameBtn.h) * zoom);
-    ctx.lineTo((interface.saveFrameBtn.x + interface.saveFrameBtn.w - interface.padding) * zoom, (interface.saveFrameBtn.y + 0.5 * interface.saveFrameBtn.h) * zoom);
-    ctx.moveTo((interface.saveFrameBtn.x + 0.5 * interface.saveFrameBtn.w) * zoom, (interface.saveFrameBtn.y + interface.padding) * zoom);
-    ctx.lineTo((interface.saveFrameBtn.x + 0.5 * interface.saveFrameBtn.w) * zoom, (interface.saveFrameBtn.y + interface.saveFrameBtn.h - interface.padding) * zoom);
+    ctx.lineWidth = 0.15 * userInterface.saveFrameBtn.h * zoom;
+    ctx.moveTo((userInterface.saveFrameBtn.x + userInterface.padding) * zoom, (userInterface.saveFrameBtn.y + 0.5 * userInterface.saveFrameBtn.h) * zoom);
+    ctx.lineTo((userInterface.saveFrameBtn.x + userInterface.saveFrameBtn.w - userInterface.padding) * zoom, (userInterface.saveFrameBtn.y + 0.5 * userInterface.saveFrameBtn.h) * zoom);
+    ctx.moveTo((userInterface.saveFrameBtn.x + 0.5 * userInterface.saveFrameBtn.w) * zoom, (userInterface.saveFrameBtn.y + userInterface.padding) * zoom);
+    ctx.lineTo((userInterface.saveFrameBtn.x + 0.5 * userInterface.saveFrameBtn.w) * zoom, (userInterface.saveFrameBtn.y + userInterface.saveFrameBtn.h - userInterface.padding) * zoom);
     ctx.stroke();
     // Remove Frame button
     ctx.beginPath();
-    ctx.lineWidth = 0.15 * interface.removeFrameBtn.h * zoom;
-    ctx.moveTo((interface.removeFrameBtn.x + interface.padding) * zoom, (interface.removeFrameBtn.y + 0.5 * interface.removeFrameBtn.h) * zoom);
-    ctx.lineTo((interface.removeFrameBtn.x + interface.removeFrameBtn.w - interface.padding) * zoom, (interface.removeFrameBtn.y + 0.5 * interface.removeFrameBtn.h) * zoom);
+    ctx.lineWidth = 0.15 * userInterface.removeFrameBtn.h * zoom;
+    ctx.moveTo((userInterface.removeFrameBtn.x + userInterface.padding) * zoom, (userInterface.removeFrameBtn.y + 0.5 * userInterface.removeFrameBtn.h) * zoom);
+    ctx.lineTo((userInterface.removeFrameBtn.x + userInterface.removeFrameBtn.w - userInterface.padding) * zoom, (userInterface.removeFrameBtn.y + 0.5 * userInterface.removeFrameBtn.h) * zoom);
     ctx.stroke();
 
     // Frames
     ctx.strokeStyle = COLORS["CHALK"];
-    for (let i = 0; i < interface.frames.length; i++) {
+    for (let i = 0; i < userInterface.frames.length; i++) {
         ctx.fillStyle = COLORS["CHALK"];
         ctx.beginPath();
-        let x = interface.framesDisplay.x + 0.5 * interface.frameBtn.w + i * interface.frameBtn.w;
-        let y = interface.framesDisplay.y + 0.5 * interface.frameBtn.h;
-        ctx.arc(x * zoom, y * zoom, 0.3 * interface.frameBtn.w * zoom, 0, 2 * Math.PI);
+        let x = userInterface.framesDisplay.x + 0.5 * userInterface.frameBtn.w + i * userInterface.frameBtn.w;
+        let y = userInterface.framesDisplay.y + 0.5 * userInterface.frameBtn.h;
+        ctx.arc(x * zoom, y * zoom, 0.3 * userInterface.frameBtn.w * zoom, 0, 2 * Math.PI);
         ctx.fill();
 
-        if (i < interface.frames.length - 1) {
+        if (i < userInterface.frames.length - 1) {
             ctx.beginPath();
-            ctx.lineWidth = 0.15 * interface.frameBtn.w * zoom;
+            ctx.lineWidth = 0.15 * userInterface.frameBtn.w * zoom;
             ctx.moveTo(x * zoom, y * zoom);
-            ctx.lineTo((x + interface.frameBtn.w) * zoom, y * zoom);
+            ctx.lineTo((x + userInterface.frameBtn.w) * zoom, y * zoom);
             ctx.stroke();
         }
 
-        if (interface.activeFrame === i) {
+        if (userInterface.activeFrame === i) {
             ctx.fillStyle = COLORS["OUTLINE"];
             ctx.beginPath();
-            ctx.arc(x * zoom, y * zoom, 0.15 * interface.frameBtn.w * zoom, 0, 2 * Math.PI);
+            ctx.arc(x * zoom, y * zoom, 0.15 * userInterface.frameBtn.w * zoom, 0, 2 * Math.PI);
             ctx.fill();
         }
     }
@@ -250,18 +250,18 @@ let drawInterface = function() {
     let i = 0;
     for (let shortcut of [{key: "M", txt: "ove"}, {key: "T", txt: "hrow"}, {key: "P", txt: "ass"}, {key: "B", txt: "eat"}, {key: "D", txt: "ie"}, {key: "L", txt: "ive"}]) {
         ctx.fillStyle = shortcuts[shortcut.key.toLowerCase()] ? COLORS["FOCUS"] : COLORS["OUTLINE"];
-        ctx.font = "bold " + interface.shortcutsDisplay.h * zoom + "px Arial";
+        ctx.font = "bold " + userInterface.shortcutsDisplay.h * zoom + "px Arial";
         let calculatedWidth = ctx.measureText(shortcut.key).width;
-        ctx.fillText(shortcut.key, (interface.shortcutsDisplay.x + i * interface.shortcutsDisplay.w) * zoom, (interface.shortcutsDisplay.y + interface.shortcutsDisplay.h) * zoom);
+        ctx.fillText(shortcut.key, (userInterface.shortcutsDisplay.x + i * userInterface.shortcutsDisplay.w) * zoom, (userInterface.shortcutsDisplay.y + userInterface.shortcutsDisplay.h) * zoom);
         ctx.fillStyle = COLORS["OUTLINE"];
-        ctx.font = 0.6 * interface.shortcutsDisplay.h * zoom + "px Arial";
-        ctx.fillText(shortcut.txt, (interface.shortcutsDisplay.x + i * interface.shortcutsDisplay.w) * zoom + calculatedWidth, (interface.shortcutsDisplay.y + interface.shortcutsDisplay.h) * zoom);
+        ctx.font = 0.6 * userInterface.shortcutsDisplay.h * zoom + "px Arial";
+        ctx.fillText(shortcut.txt, (userInterface.shortcutsDisplay.x + i * userInterface.shortcutsDisplay.w) * zoom + calculatedWidth, (userInterface.shortcutsDisplay.y + userInterface.shortcutsDisplay.h) * zoom);
         i++;
     }
 
     // Feed
-    ctx.font = interface.feedDisplay.h * zoom + "px Arial";
-    ctx.fillText(interface.feed, total_length - ctx.measureText(interface.feed).width - zoom, (interface.feedDisplay.y + interface.feedDisplay.h) * zoom);
+    ctx.font = userInterface.feedDisplay.h * zoom + "px Arial";
+    ctx.fillText(userInterface.feed, total_length - ctx.measureText(userInterface.feed).width - zoom, (userInterface.feedDisplay.y + userInterface.feedDisplay.h) * zoom);
 
     // Free Drawing
     ctx.fillStyle = COLORS["FREEDRAWING"];
@@ -299,8 +299,8 @@ let draw = function() {
     drawInterface();
 
     drawPlayer.identity = {[Team.LEFT]: {}, [Team.RIGHT]: {}, [Team.NONE]: {}};
-    for (let i = 0; i < interface.frames[interface.activeFrame].players.length; i++) {
-        let activePlayerState = interface.frames[interface.activeFrame].players[i];
+    for (let i = 0; i < userInterface.frames[userInterface.activeFrame].players.length; i++) {
+        let activePlayerState = userInterface.frames[userInterface.activeFrame].players[i];
         let drawnPlayer = activePlayerState.clone(false);
         if (activePlayerState === selected) {
             drawnPlayer.selected = true;
@@ -311,10 +311,10 @@ let draw = function() {
         if (activePlayerState === focused) {
             drawnPlayer.focused = true;
         }
-        if (interface.animationEnd >= currentTime) {
-            previousPlayerState = interface.frames[mod(interface.activeFrame - 1, interface.frames.length)].players[i];
+        if (userInterface.animationEnd >= currentTime) {
+            previousPlayerState = userInterface.frames[mod(userInterface.activeFrame - 1, userInterface.frames.length)].players[i];
             if (previousPlayerState !== undefined) {
-                let t = 1 - ((interface.animationEnd - currentTime) / interface.animationLength);
+                let t = 1 - ((userInterface.animationEnd - currentTime) / userInterface.animationLength);
                 let [x, y] = lerpPosition(activePlayerState.x, activePlayerState.y, previousPlayerState.x, previousPlayerState.y, t);
                 drawnPlayer.x = x;
                 drawnPlayer.y = y;
@@ -323,8 +323,8 @@ let draw = function() {
         drawPlayer(drawnPlayer);
     }
 
-    for (let i = 0; i < interface.frames[interface.activeFrame].balls.length; i++) {
-        let activeBallState = interface.frames[interface.activeFrame].balls[i];
+    for (let i = 0; i < userInterface.frames[userInterface.activeFrame].balls.length; i++) {
+        let activeBallState = userInterface.frames[userInterface.activeFrame].balls[i];
         let drawnBall = activeBallState.clone(false);
         if (activeBallState === selected || (activeBallState.holder !== undefined && activeBallState.holder !== null && activeBallState.holder === selected)) {
             drawnBall.selected = true;
@@ -332,10 +332,10 @@ let draw = function() {
         if (activeBallState === highlighted) {
             drawnBall.highlighted = true;
         }
-        if (interface.animationEnd >= currentTime) {
-            previousBallState = interface.frames[mod(interface.activeFrame - 1, interface.frames.length)].balls[i];
+        if (userInterface.animationEnd >= currentTime) {
+            previousBallState = userInterface.frames[mod(userInterface.activeFrame - 1, userInterface.frames.length)].balls[i];
             if (previousBallState !== undefined) {
-                let t = 1 - ((interface.animationEnd - currentTime) / interface.animationLength);
+                let t = 1 - ((userInterface.animationEnd - currentTime) / userInterface.animationLength);
                 let [x, y] = lerpPosition(activeBallState.x, activeBallState.y, previousBallState.x, previousBallState.y, t);
                 drawnBall.x = x;
                 drawnBall.y = y;

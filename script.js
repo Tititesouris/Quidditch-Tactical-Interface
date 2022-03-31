@@ -84,9 +84,9 @@ let Interface = function () {
         this.animationEnd = 0;
     };
     this.saveFrame = function () {
-        attachedBalls = [];
-        clonedBalls = [];
-        newPlayers = [];
+        let attachedBalls = [];
+        let clonedBalls = [];
+        let newPlayers = [];
         for (let i = 0; i < this.frames[this.activeFrame].players.length; i++) {
             let cloned = this.frames[this.activeFrame].players[i].clone();
             if (cloned.attached !== undefined && cloned.attached !== null) {
@@ -95,7 +95,7 @@ let Interface = function () {
             }
             newPlayers.push(cloned);
         }
-        newBalls = [];
+        let newBalls = [];
         for (let i = 0; i < this.frames[this.activeFrame].balls.length; i++) {
             let indexBall = indexInArray(this.frames[this.activeFrame].balls[i], attachedBalls);
             if (indexBall === -1) {
@@ -200,8 +200,8 @@ for (let side of [-1, 1]) {
 defaultPlayers.push(new Player(POSITION["MIDDLE"][0], DIMENSIONS["TOTAL_WIDTH"], Team.NONE, Role.SNITCH));
 */
 
-let interface = new Interface();
-interface.addFrame(defaultPlayers, defaultBalls);
+let userInterface = new Interface();
+userInterface.addFrame(defaultPlayers, defaultBalls);
 
 let drawnPixels = [];
 
@@ -220,7 +220,7 @@ let isInRect = function (x, y, rect) {
 let getClosestAnimate = function (x, y) {
     let closest = null;
     let minDistance = 1.5;
-    let animates = interface.frames[interface.activeFrame].balls.concat(interface.frames[interface.activeFrame].players);
+    let animates = userInterface.frames[userInterface.activeFrame].balls.concat(userInterface.frames[userInterface.activeFrame].players);
     for (let i = 0; i < animates.length; i++) {
         let animate = animates[i];
         if (animate !== dragged) {
@@ -236,8 +236,8 @@ let getClosestAnimate = function (x, y) {
 
 let getMeterCoordinates = function (e) {
     let rect = canvas.getBoundingClientRect();
-    let x = parseInt(e.clientX - rect.left) / zoom;
-    let y = parseInt(e.clientY - rect.top) / zoom;
+    let x = Math.floor(e.clientX - rect.left) / zoom;
+    let y = Math.floor(e.clientY - rect.top) / zoom;
     x = Math.min(Math.max(x, 0), DIMENSIONS["TOTAL_LENGTH"]);
     y = Math.min(Math.max(y, 0), DIMENSIONS["TOTAL_WIDTH"]);
     return [x, y];
@@ -272,10 +272,7 @@ let animateDrop = function (animate) {
 
 let animateDie = function (animate) {
     animate.onBroom = false;
-    if (animateDrop(animate)) {
-        return true;
-    }
-    return false;
+    return animateDrop(animate);
 };
 
 let updateSelection = function (x, y) {
@@ -298,24 +295,24 @@ let selectEvent = function (e) {
     if (shortcuts["d"] && clicked !== null && clicked instanceof Player) {
         let lostBall = clicked.attached;
         let hadBall = animateDie(clicked);
-        interface.feed = clicked.identity() + " goes off broom";
+        userInterface.feed = clicked.identity() + " goes off broom";
         if (hadBall) {
-            interface.feed += ", " + lostBall.identity() + " dropped";
+            userInterface.feed += ", " + lostBall.identity() + " dropped";
         }
         clicked = null;
     } else if (shortcuts["l"] && clicked !== null && clicked instanceof Player) {
         clicked.onBroom = true;
-        interface.feed = clicked.identity() + " goes back on broom";
+        userInterface.feed = clicked.identity() + " goes back on broom";
         clicked = null;
     } else if (selected !== null) {
         if (shortcuts["m"]) {
             animateMoveTo(selected, x, y);
-            interface.feed = selected.identity() + " moves to (" + Math.round(x) + ", " + Math.round(y) + ")";
+            userInterface.feed = selected.identity() + " moves to (" + Math.round(x) + ", " + Math.round(y) + ")";
         } else if (shortcuts["t"]) {
             let held = selected.attached;
             if (animateDrop(selected)) {
                 animateMoveTo(held, x, y);
-                interface.feed = selected.identity() + " throws " + held.identity() + " to (" + Math.round(x) + ", " + Math.round(y) + ")";
+                userInterface.feed = selected.identity() + " throws " + held.identity() + " to (" + Math.round(x) + ", " + Math.round(y) + ")";
                 selected = held;
             }
         } else if (shortcuts["p"]) {
@@ -324,9 +321,9 @@ let selectEvent = function (e) {
                 if (animateDrop(selected)) {
                     let droppedBall = clicked.attached;
                     let hadBall = animateCatch(clicked, passed);
-                    interface.feed = selected.identity() + " passes " + passed.identity() + " to " + clicked.identity();
+                    userInterface.feed = selected.identity() + " passes " + passed.identity() + " to " + clicked.identity();
                     if (hadBall) {
-                        interface.feed += ", " + droppedBall.identity() + " dropped";
+                        userInterface.feed += ", " + droppedBall.identity() + " dropped";
                     }
                 }
             }
@@ -339,9 +336,9 @@ let selectEvent = function (e) {
                         let hadBall = animateDie(clicked);
                         let side = Math.sign(selected.x - clicked.x);
                         animateMoveTo(thrown, clicked.x + side * 0.4, clicked.y - 0.25);
-                        interface.feed = selected.identity() + " beats " + clicked.identity() + " with " + thrown.identity();
+                        userInterface.feed = selected.identity() + " beats " + clicked.identity() + " with " + thrown.identity();
                         if (hadBall) {
-                            interface.feed += ", " + lostBall.identity() + " dropped";
+                            userInterface.feed += ", " + lostBall.identity() + " dropped";
                         }
                     }
                 }
@@ -365,10 +362,15 @@ let releaseEvent = function (e) {
     }
 
     // Attach on release
-    if (dragged !== null && focused !== null) {
-        animateCatch(focused, dragged);
-        if (dragged === selected) {
-            selected = focused;
+    if (dragged !== null) {
+        if (focused !== null) {
+            animateCatch(focused, dragged);
+            if (dragged === selected) {
+                selected = focused;
+            }
+        }
+        else {
+            dragged.holder = null
         }
     }
 
@@ -385,8 +387,8 @@ let moveEvent = function (e) {
             dragged.holder.attached = null;
         } else if (shortcuts["f"]) {
             let rect = canvas.getBoundingClientRect();
-            let x = parseInt(e.clientX - rect.left);
-            let y = parseInt(e.clientY - rect.top);
+            let x = Math.floor(e.clientX - rect.left);
+            let y = Math.floor(e.clientY - rect.top);
             if (!drawnPixels.includes([x, y])) {
                 drawnPixels.push([x, y]);
             }
@@ -400,15 +402,15 @@ let clickEvent = function (e) {
     let [x, y] = getMeterCoordinates(e);
     let closest = getClosestAnimate(x, y);
     if (closest === null) {
-        if (isInRect(x, y, interface.stepBtn)) {
-            interface.nextFrame();
-        } else if (isInRect(x, y, interface.saveFrameBtn)) {
-            interface.saveFrame();
-        } else if (isInRect(x, y, interface.removeFrameBtn)) {
-            interface.removeFrame();
-        } else if (isInRect(x, y, interface.framesDisplay)) {
-            let frame = parseInt((x - interface.framesDisplay.x) / interface.frameBtn.w);
-            interface.goToFrame(frame);
+        if (isInRect(x, y, userInterface.stepBtn)) {
+            userInterface.nextFrame();
+        } else if (isInRect(x, y, userInterface.saveFrameBtn)) {
+            userInterface.saveFrame();
+        } else if (isInRect(x, y, userInterface.removeFrameBtn)) {
+            userInterface.removeFrame();
+        } else if (isInRect(x, y, userInterface.framesDisplay)) {
+            let frame = Math.floor((x - userInterface.framesDisplay.x) / userInterface.frameBtn.w);
+            userInterface.goToFrame(frame);
         }
     }
     document.getElementById("context-menu").style.display = "none";
@@ -418,7 +420,7 @@ let clickEvent = function (e) {
 let contextMenuOptions = [Role.BEATER, Role.CHASER, Role.KEEPER, Role.SEEKER].concat([Type.BLUDGER, Type.QUAFFLE]);
 let contextMenuEvent = function (e) {
     let contextMenu = document.getElementById("context-menu");
-    let [x, y] = getMeterCoordinates(e);
+    let x = getMeterCoordinates(e)[0];
     let team = x < POSITION["MIDDLE"][0] ? Team.LEFT : Team.RIGHT;
     contextMenu.innerHTML = "";
     for (let i = 0; i < contextMenuOptions.length; i++) {
@@ -450,12 +452,12 @@ let contextMenuClickEvent = function (e) {
         let team = parseInt(contextMenu.children[choice].getAttribute("team"));
         let role = parseInt(contextMenu.children[choice].getAttribute("role"));
         let side = team === Team.LEFT ? -1 : 1;
-        interface.frames[interface.activeFrame].players.push(
+        userInterface.frames[userInterface.activeFrame].players.push(
             new Player(POSITION["MIDDLE"][0] + side * 20.5, DIMENSIONS["TOTAL_WIDTH"] - 1.5, team, role)
         );
     } else {
         let type = parseInt(contextMenu.children[choice].getAttribute("type"));
-        interface.frames[interface.activeFrame].balls.push(
+        userInterface.frames[userInterface.activeFrame].balls.push(
             new Ball(POSITION["MIDDLE"][0], DIMENSIONS["TOTAL_WIDTH"] - 1.5, type)
         );
     }

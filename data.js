@@ -12,7 +12,7 @@ let download = function(filename, text) {
 
 let importData = function() {
     let data = JSON.retrocycle(JSON.parse(dataTextArea.value));
-    interface = new Interface();
+    userInterface = new Interface();
     console.log(data);
     for (let i = 0; i < data.length; i++) {
         let players = data[i].players;
@@ -29,7 +29,7 @@ let importData = function() {
 };
 
 let exportData = function() {
-    dataTextArea.value = JSON.stringify(JSON.decycle(interface.frames));
+    dataTextArea.value = JSON.stringify(JSON.decycle(userInterface.frames));
     download("QuidditchTactics_" + new Date().toISOString().substring(0, 19).replace(/:/g, "-") + ".json", dataTextArea.value);
 };
 
