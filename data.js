@@ -19,13 +19,13 @@ let importData = function() {
         for (let iPlayer = 0; iPlayer < data[i].players.length; iPlayer++) {
             Object.setPrototypeOf(players[iPlayer], Player.prototype);
         }
-        balls = data[i].balls;
+        let balls = data[i].balls;
         for (let iBall = 0; iBall < data[i].balls.length; iBall++) {
             Object.setPrototypeOf(balls[iBall], Ball.prototype);
         }
-        interface.addFrame(players, balls);
+        userInterface.addFrame(players, balls);
     }
-    interface.goToFrame(0);
+    userInterface.goToFrame(0);
 };
 
 let exportData = function() {
