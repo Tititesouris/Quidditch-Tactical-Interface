@@ -1,5 +1,6 @@
 # TODO
 - Export to gif
+- Add "size" property in Player and Ball to allow resizing on the fly
 - Choosing motion speed
 - Marking animates to tell the people watching where to focus
 - Dropdown for choosing tactic
